@@ -5,9 +5,6 @@ const cors = require('cors')
 
 const app = express()
 
-app.use(cors())
-app.use(express.json())
-
 const DATABASE = process.env.DATABASE
 const PORT = process.env.PORT || 4000
 
@@ -19,9 +16,13 @@ async function main() {
     console.log('DB connected')
 }
 
+app.use(cors())
+app.use(express.json())
+
 const authRoutes = require('./routes/auth')
 
 app.use('/', authRoutes.router)
+
 app.listen(PORT, () => {
     console.log('server created')
 })
