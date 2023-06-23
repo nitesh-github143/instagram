@@ -1,21 +1,21 @@
-require('dotenv').config()
+require("dotenv").config()
 const express = require('express')
 const bcrypt = require("bcrypt")
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken")
 
 const router = express.Router()
-const model = require('../models/user')
-const { isLogin } = require('../middleware/isLogin')
 const JWT_SECRET = process.env.JWT_SECRET
+const model = require('../models/user')
+const { isLogin } = require("../middleware/isLogin")
 const User = model.User
 
 router
-    .get('/fetch', isLogin, (req, res) => {
-        res.send('hello')
+    .get('/protect', isLogin, (req, res) => {
+        res.send("hello Youtube")
     })
     .post('/signup', (req, res) => {
         const { name, email, password } = req.body
-        if (!email || !name || !password) {
+        if (!name || !email || !password) {
             return res.status(422).json({ error: "Please fill all the details" })
         }
         User.findOne({ email })
@@ -24,34 +24,34 @@ router
                     return res.status(422).json({ error: "User already exist" })
                 }
                 bcrypt.hash(password, 10)
-                    .then(hashedPassword => {
+                    .then(hashPassword => {
                         const user = new User({
                             name,
                             email,
-                            password: hashedPassword
+                            password: hashPassword
                         })
                         user.save()
                             .then(user => {
-                                res.send({ message: "User saved success" })
+                                res.send({ message: "User saved successfully" })
                             })
-                            .catch(err => {
-                                console.log(err)
-                            })
+                    })
+                    .catch(err => {
+                        console.log(err)
                     })
             })
             .catch(err => {
                 console.log(err)
             })
     })
-    .post('/login', (req, res) => {
+    .post("/login", (req, res) => {
         const { email, password } = req.body
         if (!email || !password) {
-            return res.status(422).json({ error: "Please add all the details" })
+            return res.status(422).json({ error: "Please fill all the details" })
         }
         User.findOne({ email })
             .then(savedUser => {
                 if (!savedUser) {
-                    return res.status(422).json({ error: "Invalid detail" })
+                    return res.status(422).json({ error: "User does not exist" })
                 }
                 bcrypt.compare(password, savedUser.password)
                     .then(isCorrect => {
@@ -59,7 +59,7 @@ router
                             const token = jwt.sign({ _id: savedUser._id }, JWT_SECRET)
                             res.json({ token })
                         } else {
-                            return res.status(422).json({ error: "Invalid detail" })
+                            return res.status(422).json({ error: "Invalid details" })
                         }
                     })
                     .catch(err => {
