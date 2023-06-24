@@ -1,10 +1,7 @@
 require("dotenv").config()
 const express = require('express')
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
 
 const router = express.Router()
-const JWT_SECRET = process.env.JWT_SECRET
 const model = require('../models/post')
 const { isLogin } = require("../middleware/isLogin")
 const Post = model.Post
@@ -15,6 +12,16 @@ router
             .populate("postedBy", "_id name")
             .then(posts => {
                 res.json({ posts })
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    })
+    .get('/mypost', isLogin, (req, res) => {
+        Post.find({ postedBy: req.user._id })
+            .populate("postedBy", "_id name")
+            .then(mypost => {
+                res.json({ mypost })
             })
             .catch(err => {
                 console.log(err)
@@ -39,5 +46,6 @@ router
                 console.log(err)
             })
     })
+
 
 exports.router = router
