@@ -19,9 +19,11 @@ async function main() {
 app.use(cors())
 app.use(express.json())
 
-const authRoutes = require('./routes/auth')
+const authRouter = require('./routes/auth')
+const postRouter = require('./routes/post')
 
-app.use('/', authRoutes.router)
+app.use('/', authRouter.router)
+app.use('/', postRouter.router)
 
 app.listen(PORT, () => {
     console.log('server created')
