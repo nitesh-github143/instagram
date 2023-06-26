@@ -28,14 +28,15 @@ router
             })
     })
     .post('/createpost', isLogin, (req, res) => {
-        const { title, body } = req.body
-        if (!title || !body) {
+        const { title, body, pic } = req.body
+        if (!title || !body || !pic) {
             return res.status(422).json({ error: "Please fill all the details" })
         }
         req.user.password = undefined
         const post = new Post({
             title,
             body,
+            photo: pic,
             postedBy: req.user
         })
         post.save()
