@@ -32,7 +32,7 @@ router
                         })
                         user.save()
                             .then(user => {
-                                res.send({ message: "User saved successfully" })
+                                res.json({ message: "User saved successfully" })
                             })
                     })
                     .catch(err => {
@@ -57,7 +57,8 @@ router
                     .then(isCorrect => {
                         if (isCorrect) {
                             const token = jwt.sign({ _id: savedUser._id }, JWT_SECRET)
-                            res.json({ token })
+                            const { _id, name, email } = savedUser
+                            res.json({ token, user: { _id, name, email } })
                         } else {
                             return res.status(422).json({ error: "Invalid details" })
                         }
