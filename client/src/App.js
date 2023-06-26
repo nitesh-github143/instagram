@@ -1,18 +1,32 @@
 import './App.css';
 import Navbar from './components/Navbar';
 
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom"
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import CreatePost from './pages/CreatePost';
 
+import NetworkContext from './context/NetworkContext'
+import UserContext from "./context/UserContext"
+import { initialState, reducer } from './reducers/userReducer'
+import { useContext, useEffect, useReducer } from 'react';
 
-function App() {
+
+const Routing = () => {
+  const navigate = useNavigate()
+  const user = JSON.parse(localStorage.getItem("user"))
+  const { state, dispatch } = useContext(UserContext)
+  useEffect(() => {
+    if (user) {
+      dispatch({ type: "USER", payload: user })
+    } else {
+      navigate('/login')
+    }
+  }, [])
   return (
-    <BrowserRouter>
-      <Navbar />
+    <>
       <Routes>
         <Route exact path='/' element={<Home />} />
         <Route path='/profile' element={<Profile />} />
@@ -20,7 +34,22 @@ function App() {
         <Route path='/signup' element={<Signup />} />
         <Route path='/createpost' element={<CreatePost />} />
       </Routes>
-    </BrowserRouter>
+    </>
+  )
+}
+
+function App() {
+  const networkUrl = "http://localhost:5000/instagram"
+  const [state, dispatch] = useReducer(reducer, initialState)
+  return (
+    <UserContext.Provider value={{ state, dispatch }}>
+      <NetworkContext.Provider value={networkUrl}>
+        <BrowserRouter>
+          <Navbar />
+          <Routing />
+        </BrowserRouter>
+      </NetworkContext.Provider>
+    </UserContext.Provider>
   );
 }
 
