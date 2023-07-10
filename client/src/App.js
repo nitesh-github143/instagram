@@ -44,7 +44,8 @@ const Routing = () => {
 }
 
 function App() {
-  const networkUrl = "http://localhost:5000/instagram"
+  // const networkUrl = "http://localhost:5000/instagram"
+  const networkUrl = "https://instagram-backend-ei51.onrender.com/instagram"
   const [state, dispatch] = useReducer(reducer, initialState)
   return (
     <UserContext.Provider value={{ state, dispatch }}>

@@ -24,9 +24,9 @@ const authRouter = require('./routes/auth')
 const postRouter = require('./routes/post')
 const userRouter = require('./routes/user')
 
-app.use('/instagram', authRouter.router)
-app.use('/instagram', postRouter.router)
-app.use('/instagram', userRouter.router)
+app.use('/', authRouter.router)
+app.use('/', postRouter.router)
+app.use('/', userRouter.router)
 
 app.listen(PORT, () => {
     console.log('server created')
