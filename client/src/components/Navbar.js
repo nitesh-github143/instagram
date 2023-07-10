@@ -17,21 +17,23 @@ const Navbar = () => {
     const navigate = useNavigate()
     const { state, dispatch } = useContext(UserContext)
     const navigation = state ? [
-        { name: 'Home', href: '/', current: false },
+        { name: 'Explore', href: '/', current: false },
+        { name: 'Home', href: '/myfollowerspost', current: false },
     ] : [
         { name: 'Login', href: '/login', current: false },
         { name: 'Sign Up', href: '/signup', current: false }
     ]
 
-    const handleLogout = () => {
+    const handleLogout = (e) => {
+        e.preventDefault()
+        navigate('/login')
         localStorage.clear()
-        navigate('/signup')
         dispatch({ type: "CLEAR" })
-
+        console.log("hello")
     }
 
     return (
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-gray-800 sticky top-0 ">
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -83,8 +85,8 @@ const Navbar = () => {
                                         <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                             <span className="sr-only">Open user menu</span>
                                             <img
-                                                className="h-8 w-8 rounded-full"
-                                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                className="h-8 w-8 rounded-full object-cover"
+                                                src={state.pic}
                                                 alt=""
                                             />
                                         </Menu.Button>
@@ -113,7 +115,7 @@ const Navbar = () => {
                                                 {({ active }) => (
                                                     <Link
                                                         to="/"
-                                                        onClick={handleLogout}
+                                                        onClick={(e) => handleLogout(e)}
                                                         className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                     >
                                                         Sign out
