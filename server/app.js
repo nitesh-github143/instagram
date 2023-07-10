@@ -4,9 +4,10 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 
 const app = express()
+app.use(cors())
 
 const DATABASE = process.env.DATABASE
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 5000
 
 // connection with Database 
 main().catch(err => console.log(err));
@@ -16,14 +17,16 @@ async function main() {
     console.log('DB connected')
 }
 
-app.use(cors())
+
 app.use(express.json())
 
 const authRouter = require('./routes/auth')
 const postRouter = require('./routes/post')
+const userRouter = require('./routes/user')
 
-app.use('/', authRouter.router)
-app.use('/', postRouter.router)
+app.use('/instagram', authRouter.router)
+app.use('/instagram', postRouter.router)
+app.use('/instagram', userRouter.router)
 
 app.listen(PORT, () => {
     console.log('server created')
