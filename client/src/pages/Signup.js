@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import NetworkContext from '../context/NetworkContext'
 
@@ -9,9 +9,35 @@ const Signup = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [image, setImage] = useState("");
+    const [preview, setPreview] = useState(null);
+    const [url, setUrl] = useState(undefined)
 
-    const postData = (e) => {
-        e.preventDefault()
+    useEffect(() => {
+        if (url) {
+            uploadFields()
+        }
+    }, [url])
+
+    const uploadPic = () => {
+        const data = new FormData()
+        data.append("file", image)
+        data.append("upload_preset", "social-clone")
+        data.append("cloud_name", "dpi7s3f48")
+        fetch("https://api.cloudinary.com/v1_1/dpi7s3f48/image/upload", {
+            method: "post",
+            body: data
+        })
+            .then(res => res.json())
+            .then(data => {
+                setUrl(data.url)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const uploadFields = () => {
         fetch(`${networkUrl}/signup`, {
             method: "post",
             headers: {
@@ -20,7 +46,8 @@ const Signup = () => {
             body: JSON.stringify({
                 name,
                 password,
-                email
+                email,
+                pic: url
             })
         }).then(res => res.json())
             .then(data => {
@@ -35,6 +62,14 @@ const Signup = () => {
             .catch(err => {
                 console.log(err)
             })
+    }
+
+    const postData = (e) => {
+        e.preventDefault()
+        if (image) {
+            uploadPic()
+        } else
+            uploadFields()
     }
 
     return (
@@ -92,7 +127,7 @@ const Signup = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="mt-2">
+                        <div >
                             <input
                                 type="password"
                                 value={password}
@@ -101,6 +136,33 @@ const Signup = () => {
                                 required
                                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
+                        </div>
+                    </div>
+
+                    <div >
+                        <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900">
+                            Profile Pic
+                        </label>
+                        <div>
+                            <input
+                                type="file"
+                                id="image"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files[0]
+                                    setPreview(URL.createObjectURL(file))
+                                    setImage(file)
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            />
+                            {image && (
+                                <img
+                                    src={preview}
+                                    alt="Preview"
+                                    className="mt-2 rounded "
+                                    style={{ maxWidth: '100%', maxHeight: '140px' }}
+                                />
+                            )}
                         </div>
                     </div>
 
