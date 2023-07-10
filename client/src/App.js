@@ -12,6 +12,8 @@ import NetworkContext from './context/NetworkContext'
 import UserContext from "./context/UserContext"
 import { initialState, reducer } from './reducers/userReducer'
 import { useContext, useEffect, useReducer } from 'react';
+import UserProfile from './pages/UserProfile';
+import SubscribedUserPost from './pages/SubscribedUserPost';
 
 
 const Routing = () => {
@@ -21,6 +23,7 @@ const Routing = () => {
   useEffect(() => {
     if (user) {
       dispatch({ type: "USER", payload: user })
+      navigate('/')
     } else {
       navigate('/login')
     }
@@ -29,10 +32,12 @@ const Routing = () => {
     <>
       <Routes>
         <Route exact path='/' element={<Home />} />
-        <Route path='/profile' element={<Profile />} />
+        <Route exact path='/profile' element={<Profile />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/createpost' element={<CreatePost />} />
+        <Route path='/profile/:userId' element={<UserProfile />} />
+        <Route path='/myfollowerspost' element={<SubscribedUserPost />} />
       </Routes>
     </>
   )
