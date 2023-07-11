@@ -1,18 +1,15 @@
-import React, { useEffect, useState, useContext } from 'react'
-
-import { useParams } from 'react-router-dom'
-import NetworkContext from '../context/NetworkContext'
-import UserContext from '../context/UserContext'
-import LoadingPage from '../components/LoadingPage'
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams } from 'react-router-dom';
+import NetworkContext from '../context/NetworkContext';
+import UserContext from '../context/UserContext';
+import LoadingPage from '../components/LoadingPage';
 
 const UserProfile = () => {
-    const networkUrl = useContext(NetworkContext)
-    const { state, dispatch } = useContext(UserContext)
-    const { userId } = useParams()
-    const [userProfile, setUserProfile] = useState(null)
-    const [isFollowing, setIsFollowing] = useState(state ? state.following.includes(userId) : false)
-    // const [url, setUrl] = useState("")
-
+    const networkUrl = useContext(NetworkContext);
+    const { state, dispatch } = useContext(UserContext);
+    const { userId } = useParams();
+    const [userProfile, setUserProfile] = useState(null);
+    const [isFollowing, setIsFollowing] = useState(state ? state.following.includes(userId) : false);
 
     useEffect(() => {
         fetch(`${networkUrl}/user/${userId}`, {
@@ -22,11 +19,11 @@ const UserProfile = () => {
         })
             .then(res => res.json())
             .then(result => {
-                console.log(result)
-                setUserProfile(result)
-            })
-        console.log(state)
-    }, [])
+                console.log(result);
+                setUserProfile(result);
+            });
+        console.log(state);
+    }, []);
 
     const followUser = () => {
         fetch(`${networkUrl}/follow`, {
@@ -41,23 +38,21 @@ const UserProfile = () => {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
-                dispatch({ type: "UPDATE", payload: { following: data.following, followers: data.followers } })
-                localStorage.setItem("user", JSON.stringify(data))
+                console.log(data);
+                dispatch({ type: "UPDATE", payload: { following: data.following, followers: data.followers } });
+                localStorage.setItem("user", JSON.stringify(data));
                 setUserProfile((prevState) => {
                     return {
                         ...prevState,
                         user: {
                             ...prevState.user,
-                            followers: [...prevState.user.followers,
-                            data._id
-                            ]
+                            followers: [...prevState.user.followers, data._id]
                         }
-                    }
-                })
-                setIsFollowing(true)
-            })
-    }
+                    };
+                });
+                setIsFollowing(true);
+            });
+    };
 
     const unfollowUser = () => {
         fetch(`${networkUrl}/unfollow`, {
@@ -72,37 +67,36 @@ const UserProfile = () => {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
-                dispatch({ type: "UPDATE", payload: { following: data.following, followers: data.followers } })
-                localStorage.setItem("user", JSON.stringify(data))
+                console.log(data);
+                dispatch({ type: "UPDATE", payload: { following: data.following, followers: data.followers } });
+                localStorage.setItem("user", JSON.stringify(data));
                 setUserProfile((prevState) => {
-                    const newFollowers = prevState.user.followers.filter(item => item !== data._id)
+                    const newFollowers = prevState.user.followers.filter(item => item !== data._id);
                     return {
                         ...prevState,
                         user: {
                             ...prevState.user,
                             followers: newFollowers
                         }
-                    }
-                })
-                setIsFollowing(false)
-            })
-    }
+                    };
+                });
+                setIsFollowing(false);
+            });
+    };
 
     return (
         <>
             {userProfile ? (
                 <div className="flex flex-col items-center">
-                    <div className="w-2/3 bg-white shadow-md rounded-lg p-4 mb-4">
+                    <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-4 mb-4">
                         <div className="flex items-center mb-4">
                             <img
-                                className="w-20 h-20 mx-2  md:w-40 md:h-40 md:mx-4 lg:w-60 lg:h-60 lg:mx-6 rounded-full object-cover"
+                                className="w-24 h-24 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full object-cover mr-4"
                                 src={userProfile.user.pic}
                                 alt="Profile"
                             />
-
                             <div>
-                                <h2 className="text-xl font-bold">{userProfile.user.name}</h2>
+                                <h2 className="text-2xl font-bold">{userProfile.user.name}</h2>
                             </div>
                         </div>
                         <div className="flex justify-between mb-4">
@@ -122,7 +116,7 @@ const UserProfile = () => {
                         {isFollowing ? (
                             <div className="flex flex-col items-center">
                                 <button
-                                    className="w-1/3 bg-red-500 text-white px-4 py-2 rounded"
+                                    className="w-1/2 bg-red-500 text-white px-4 py-2 rounded"
                                     onClick={unfollowUser}
                                 >
                                     Unfollow
@@ -131,7 +125,7 @@ const UserProfile = () => {
                         ) : (
                             <div className="flex flex-col items-center">
                                 <button
-                                    className="w-1/3  bg-blue-500 text-white px-4 py-2 rounded"
+                                    className="w-1/2 bg-blue-500 text-white px-4 py-2 rounded"
                                     onClick={followUser}
                                 >
                                     Follow
@@ -139,8 +133,8 @@ const UserProfile = () => {
                             </div>
                         )}
                     </div>
-                    <div className="w-full bg-white shadow-md rounded-lg p-4">
-                        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 gap-4">
+                    <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {userProfile.posts.map(item => {
                                 return (
                                     <img
@@ -149,7 +143,7 @@ const UserProfile = () => {
                                         src={item.photo}
                                         alt={item.title}
                                     />
-                                )
+                                );
                             })}
                         </div>
                     </div>
@@ -158,7 +152,7 @@ const UserProfile = () => {
                 <LoadingPage />
             )}
         </>
-    )
-}
+    );
+};
 
 export default UserProfile;

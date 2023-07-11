@@ -51,7 +51,9 @@ function App() {
     <UserContext.Provider value={{ state, dispatch }}>
       <NetworkContext.Provider value={networkUrl}>
         <BrowserRouter>
-          <Navbar />
+          {
+            state ? <Navbar /> : <></>
+          }
           <Routing />
         </BrowserRouter>
       </NetworkContext.Provider>
