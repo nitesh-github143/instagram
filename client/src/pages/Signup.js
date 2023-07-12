@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import NetworkContext from '../context/NetworkContext'
+import LoadingPage from '../components/LoadingPage';
 
 const Signup = () => {
     const networkUrl = useContext(NetworkContext)
@@ -12,12 +13,14 @@ const Signup = () => {
     const [image, setImage] = useState("");
     const [preview, setPreview] = useState(null);
     const [url, setUrl] = useState(undefined)
+    const [isProcessing, setIsProcessing] = useState(false)
 
     useEffect(() => {
         if (url) {
             uploadFields()
         }
     }, [url])
+
 
     const uploadPic = () => {
         const data = new FormData()
@@ -38,6 +41,7 @@ const Signup = () => {
     }
 
     const uploadFields = () => {
+        setIsProcessing(true)
         fetch(`${networkUrl}/signup`, {
             method: "post",
             headers: {
@@ -52,10 +56,10 @@ const Signup = () => {
         }).then(res => res.json())
             .then(data => {
                 if (data.error) {
-                    alert(data.error)
+                    console.log(data.error)
                 }
                 else {
-                    alert(data.message)
+                    setIsProcessing(false)
                     navigate('/login')
                 }
             })
@@ -70,6 +74,10 @@ const Signup = () => {
             uploadPic()
         } else
             uploadFields()
+    }
+
+    if (isProcessing) {
+        return <LoadingPage />
     }
 
     return (
@@ -94,7 +102,7 @@ const Signup = () => {
                                 onChange={(e) => setName(e.target.value)}
                                 autoComplete="name"
                                 required
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2"
                             />
                         </div>
                     </div>
@@ -111,7 +119,7 @@ const Signup = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 autoComplete="email"
                                 required
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2"
                             />
                         </div>
                     </div>
@@ -134,7 +142,7 @@ const Signup = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 autoComplete="current-password"
                                 required
-                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2"
                             />
                         </div>
                     </div>

@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import NetworkContext from '../context/NetworkContext'
 
+import LoadingPage from "../components/LoadingPage"
+
 const CreatePost = () => {
     const networkUrl = useContext(NetworkContext)
     const navigate = useNavigate()
@@ -11,9 +13,10 @@ const CreatePost = () => {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('')
     const [url, setUrl] = useState('')
+    const [isProcessing, setIsProcessing] = useState(false)
 
     useEffect(() => {
-        console.log(title, body, url)
+
         if (url) {
             fetch(`${networkUrl}/createpost`, {
                 method: "post",
@@ -28,16 +31,15 @@ const CreatePost = () => {
                 })
             }).then(res => res.json())
                 .then(data => {
-                    console.log(data)
                     if (data.error) {
-                        alert(data.error)
+                        console.log(data.error)
                     }
                     else {
-                        alert(`Posted successfully`)
                         setImage(null)
                         setPreview(null)
                         setTitle('')
                         setBody('')
+                        setIsProcessing(false)
                         navigate('/')
                     }
                 })
@@ -48,6 +50,7 @@ const CreatePost = () => {
     }, [url])
 
     const postData = () => {
+        setIsProcessing(true)
         const data = new FormData()
         data.append("file", image)
         data.append("upload_preset", "social-clone")
@@ -63,6 +66,10 @@ const CreatePost = () => {
             .catch(err => {
                 console.log(err)
             })
+    }
+
+    if (isProcessing) {
+        return <LoadingPage />
     }
 
     return (
