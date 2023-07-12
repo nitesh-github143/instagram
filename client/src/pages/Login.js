@@ -2,9 +2,9 @@ import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import NetworkContext from '../context/NetworkContext'
 import UserContext from '../context/UserContext';
+import AnimatedPage from '../components/AnimatedPage';
 
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 import LoadingPage from "../components/LoadingPage"
 
 const Login = () => {
@@ -15,10 +15,11 @@ const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isProcessing, setIsProcessing] = useState(false)
+    const [errorToast, setErrorToast] = useState(null)
 
     const postData = (e) => {
         e.preventDefault()
-        setIsProcessing(true)
+
         fetch(`${networkUrl}/login`, {
             method: "post",
             headers: {
@@ -31,9 +32,10 @@ const Login = () => {
         }).then(res => res.json())
             .then(data => {
                 if (data.error) {
-                    console.log(data.error)
+                    setErrorToast(data.error);
                 }
                 else {
+                    setIsProcessing(true)
                     localStorage.setItem("jwt", data.token)
                     localStorage.setItem("user", JSON.stringify(data.user))
                     dispatch({ type: "USER", payload: data.user })
@@ -112,6 +114,9 @@ const Login = () => {
                         </button>
                     </div>
                 </form>
+                {errorToast && (
+                    <AnimatedPage message={errorToast} type="error" />
+                )}
                 <p className="mt-10 text-center text-sm text-gray-500">
                     <Link to="/signup" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                         Don't have an account ?

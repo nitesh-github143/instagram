@@ -1,84 +1,92 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Link, useNavigate } from "react-router-dom";
-import NetworkContext from '../context/NetworkContext'
-import LoadingPage from '../components/LoadingPage';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import NetworkContext from '../context/NetworkContext';
+import AnimatedPage from '../components/AnimatedPage';
+import LoadingPage from "../components/LoadingPage"
 
 const Signup = () => {
-    const networkUrl = useContext(NetworkContext)
-    const navigate = useNavigate()
+    const networkUrl = useContext(NetworkContext);
+    const navigate = useNavigate();
 
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [image, setImage] = useState("");
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [url, setUrl] = useState(undefined)
+    const [url, setUrl] = useState(undefined);
+    const [errorToast, setErrorToast] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false)
+
 
     useEffect(() => {
         if (url) {
-            uploadFields()
+            uploadFields();
         }
-    }, [url])
-
+    }, [url]);
 
     const uploadPic = () => {
-        const data = new FormData()
-        data.append("file", image)
-        data.append("upload_preset", "social-clone")
-        data.append("cloud_name", "dpi7s3f48")
-        fetch("https://api.cloudinary.com/v1_1/dpi7s3f48/image/upload", {
-            method: "post",
-            body: data
+        const data = new FormData();
+        data.append('file', image);
+        data.append('upload_preset', 'social-clone');
+        data.append('cloud_name', 'dpi7s3f48');
+        fetch('https://api.cloudinary.com/v1_1/dpi7s3f48/image/upload', {
+            method: 'post',
+            body: data,
         })
-            .then(res => res.json())
-            .then(data => {
-                setUrl(data.url)
+            .then((res) => res.json())
+            .then((data) => {
+                setUrl(data.url);
             })
-            .catch(err => {
-                console.log(err)
-            })
-    }
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
     const uploadFields = () => {
-        setIsProcessing(true)
         fetch(`${networkUrl}/signup`, {
-            method: "post",
+            method: 'post',
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 name,
                 password,
                 email,
-                pic: url
-            })
-        }).then(res => res.json())
-            .then(data => {
+                pic: url,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
                 if (data.error) {
-                    console.log(data.error)
-                }
-                else {
                     setIsProcessing(false)
-                    navigate('/login')
+                    navigate('/signup');
+                    setErrorToast(data.error);
+
+                } else {
+
+                    navigate('/login');
+                    setIsProcessing(false)
                 }
             })
-            .catch(err => {
-                console.log(err)
-            })
-    }
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
     const postData = (e) => {
-        e.preventDefault()
+        setIsProcessing(true)
+        e.preventDefault();
         if (image) {
-            uploadPic()
-        } else
-            uploadFields()
-    }
+            uploadPic();
+        } else {
+            uploadFields();
+        }
+    };
 
     if (isProcessing) {
-        return <LoadingPage />
+        return <LoadingPage />;
     }
+
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -186,12 +194,17 @@ const Signup = () => {
                         </button>
                     </div>
                 </form>
+                {errorToast && (
+                    <AnimatedPage message={errorToast} type="error" />
+                )}
+
                 <p className="mt-10 text-center text-sm text-gray-500">
                     <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                         Already have an account ?
                     </Link>
                 </p>
             </div>
+
         </div>
     )
 }

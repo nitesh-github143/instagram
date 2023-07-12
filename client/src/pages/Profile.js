@@ -27,6 +27,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (image) {
+            setIsLoading(true)
             const data = new FormData();
             data.append('file', image);
             data.append('upload_preset', 'social-clone');
@@ -49,9 +50,9 @@ const Profile = () => {
                     })
                         .then(res => res.json())
                         .then(result => {
-                            console.log(result);
                             localStorage.setItem('user', JSON.stringify({ ...state, pic: result.pic }));
-                            dispatch({ type: 'UPDATEPIC', payload: result.pic });
+                            dispatch({ type: 'UPDATEPIC', payload: result.pic })
+                            setIsLoading(false)
                         });
                 })
                 .catch(err => {

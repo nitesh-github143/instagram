@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import NetworkContext from '../context/NetworkContext'
+import AnimatedPage from '../components/AnimatedPage';
+
 
 import LoadingPage from "../components/LoadingPage"
 
@@ -14,9 +16,9 @@ const CreatePost = () => {
     const [body, setBody] = useState('')
     const [url, setUrl] = useState('')
     const [isProcessing, setIsProcessing] = useState(false)
+    const [errorToast, setErrorToast] = useState(null)
 
     useEffect(() => {
-
         if (url) {
             fetch(`${networkUrl}/createpost`, {
                 method: "post",
@@ -32,7 +34,11 @@ const CreatePost = () => {
             }).then(res => res.json())
                 .then(data => {
                     if (data.error) {
-                        console.log(data.error)
+                        setImage(null)
+                        setPreview(null)
+                        setIsProcessing(false)
+                        navigate('/createpost')
+                        setErrorToast(data.error)
                     }
                     else {
                         setImage(null)
@@ -50,22 +56,28 @@ const CreatePost = () => {
     }, [url])
 
     const postData = () => {
-        setIsProcessing(true)
-        const data = new FormData()
-        data.append("file", image)
-        data.append("upload_preset", "social-clone")
-        data.append("cloud_name", "dpi7s3f48")
-        fetch("https://api.cloudinary.com/v1_1/dpi7s3f48/image/upload", {
-            method: "post",
-            body: data
-        })
-            .then(res => res.json())
-            .then(data => {
-                setUrl(data.url)
+        if (image) {
+            setIsProcessing(true)
+            const data = new FormData()
+
+            data.append("file", image)
+            data.append("upload_preset", "social-clone")
+            data.append("cloud_name", "dpi7s3f48")
+            fetch("https://api.cloudinary.com/v1_1/dpi7s3f48/image/upload", {
+                method: "post",
+                body: data
             })
-            .catch(err => {
-                console.log(err)
-            })
+                .then(res => res.json())
+                .then(data => {
+                    setUrl(data.url)
+                })
+                .catch(err => {
+                    console.log("hi")
+                    setErrorToast(err)
+                })
+        } else {
+            setErrorToast("Please add the image")
+        }
     }
 
     if (isProcessing) {
@@ -130,6 +142,9 @@ const CreatePost = () => {
                 >
                     Add
                 </button>
+                {errorToast && (
+                    <AnimatedPage message={errorToast} type="error" />
+                )}
             </div>
         </div>
     )
