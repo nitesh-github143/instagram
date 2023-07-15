@@ -20,7 +20,7 @@ const LoadingPage = () => {
     );
   }
 
-  return <div>Your content goes here</div>;
+  return <Home />;
 };
 
 export default LoadingPage;
