@@ -150,12 +150,18 @@ const Home = () => {
     })
       .then((res) => res.json())
       .then((result) => {
-        setData(result.posts);
-        const likedPostIds = result.posts
-          .filter((post) => post.likes.includes(state?._id))
-          .map((post) => post._id);
-        setLikedPosts(likedPostIds);
+        if (result.posts) {
+          // Add a check for the existence of 'result.posts'
+          setData(result.posts);
+          const likedPostIds = result.posts
+            .filter((post) => post.likes.includes(state?._id))
+            .map((post) => post._id);
+          setLikedPosts(likedPostIds);
+        }
         setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }, []);
 
@@ -197,7 +203,7 @@ const Home = () => {
             </div>
             <div className="mb-4">
               <img
-                className="w-full sm:rounded-lg"
+                className="w-full sm:rounded-lg h-80 object-contain"
                 src={item.photo}
                 alt="Post"
               />
