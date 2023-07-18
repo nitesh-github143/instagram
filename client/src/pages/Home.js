@@ -6,6 +6,9 @@ import NetworkContext from "../context/NetworkContext";
 import UserContext from "../context/UserContext";
 import LoadingPage from "../components/LoadingPage";
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Home = () => {
   const networkUrl = useContext(NetworkContext);
   const { state, dispatch } = useContext(UserContext);
@@ -139,6 +142,7 @@ const Home = () => {
       .then((result) => {
         const updatedData = data.filter((item) => item._id !== result._id);
         setData(updatedData);
+        toast.success("Post deleted successfully");
       });
   };
 

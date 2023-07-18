@@ -2,9 +2,10 @@ import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NetworkContext from "../context/NetworkContext";
 import UserContext from "../context/UserContext";
-import AnimatedPage from "../components/AnimatedPage";
 
 import LoadingPage from "../components/LoadingPage";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -14,7 +15,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [errorToast, setErrorToast] = useState(null);
 
   const postData = (e) => {
     setIsProcessing(true);
@@ -34,7 +34,7 @@ const Login = () => {
       .then((data) => {
         if (data.error) {
           setIsProcessing(false);
-          setErrorToast(data.error);
+          toast.error(data.error);
         } else {
           setIsProcessing(true);
           localStorage.setItem("jwt", data.token);
@@ -123,7 +123,6 @@ const Login = () => {
             </button>
           </div>
         </form>
-        {errorToast && <AnimatedPage message={errorToast} type="error" />}
         <p className="mt-10 text-center text-sm text-gray-500">
           <Link
             to="/signup"
